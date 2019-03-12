@@ -186,4 +186,5 @@ def space_out():
 
 if __name__ == "__main__":
     config.threadPool = ThreadPoolExecutor(max_workers=10)
-    app.run(use_reloader=True, port=80, debug=True, threaded=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(use_reloader=True, port=port, debug=True, threaded=True)

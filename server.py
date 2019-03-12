@@ -16,8 +16,8 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 import pprint
 
 running = False
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '0'
+# os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+# os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '0'
 
 CLIENT_SECRETS_FILE = "client_secret.json"
 SCOPES = ['https://www.googleapis.com/auth/userinfo.profile',
@@ -27,7 +27,7 @@ SCOPES = ['https://www.googleapis.com/auth/userinfo.profile',
 
 app.secret_key = os.urandom(32)  # TEMPORARY solution!! change it to a string when in production.
 
-ROOT_PATH = os.environ.get('ROOT_PATH')
+# ROOT_PATH = os.environ.get('ROOT_PATH')
 
 
 @app.route('/exi', methods=['GET'])
@@ -187,4 +187,4 @@ def space_out():
 if __name__ == "__main__":
     config.threadPool = ThreadPoolExecutor(max_workers=10)
     port = int(os.environ.get('PORT', 5000))
-    app.run(use_reloader=True, port=port, debug=True, threaded=True)
+    app.run(host='0.0.0.0', use_reloader=True, port=port, debug=True, threaded=True)

@@ -16,8 +16,8 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 import pprint
 
 running = False
-# os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-# os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '0'
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '0'
 
 CLIENT_SECRETS_FILE = "client_secret.json"
 SCOPES = ['https://www.googleapis.com/auth/userinfo.profile',
@@ -186,5 +186,5 @@ def space_out():
 
 if __name__ == "__main__":
     config.threadPool = ThreadPoolExecutor(max_workers=10)
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 80))
     app.run(host='0.0.0.0', use_reloader=True, port=port, debug=True, threaded=True)

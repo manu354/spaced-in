@@ -71,7 +71,7 @@ class ClientService:
         except Exception as e:
             print(e)
 
-    def createEvent(self, title, desc, dateCreated):
+    def createEvent(self, title, desc, dateCreated, hasKeep):
         logging.basicConfig(filename='myapp.log', level=logging.INFO)
         try:
             print("Create event?", title, desc, dateCreated)
@@ -294,6 +294,7 @@ def startLoop():
     while 1:
         arrayOfFutures = []
         for obj in config.clientServices:
-            arrayOfFutures.append(config.threadPool.submit(threadWork, config.clientServices[obj]))
+            if obj.keepi:
+                arrayOfFutures.append(config.threadPool.submit(threadWork, config.clientServices[obj]))
 
         wait(arrayOfFutures, timeout=None, return_when=ALL_COMPLETED)

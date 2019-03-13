@@ -27,6 +27,7 @@ SCOPES = ['https://www.googleapis.com/auth/userinfo.profile',
 
 app.secret_key = os.urandom(32)  # TEMPORARY solution!! change it to a string when in production.
 
+
 # ROOT_PATH = os.environ.get('ROOT_PATH')
 
 
@@ -51,9 +52,14 @@ def serve(path):
 
 def newServiceObject(calCreds, keepCreds):
     oldKeepService = config.clientServices[keepCreds['username']]
-    newService = main.ClientService(calCreds, keepCreds, oldKeepService)
-    config.clientServices[keepCreds['username']] = newService
-    config.servicesCount += 0.5
+    if oldKeepService == "noKeep":
+        newService = main.ClientService(calCreds, keepCreds, False)
+        config.clientServices[keepCreds['username']] = newService
+        config.servicesCount += 0.5
+    else:
+        newService = main.ClientService(calCreds, keepCreds, oldKeepService)
+        config.clientServices[keepCreds['username']] = newService
+        config.servicesCount += 0.5
 
 
 # ROUTES TO HANDLE KEEP AND CAL AUTH
@@ -67,17 +73,25 @@ def authenticate():
         # print (request.get_json(force=True))
         session['keep-user'] = req['login']
         session['keep-pass'] = req['password']
-        try:
-            print("b4 keep")
-            keepAPI = gkeepapi.Keep()
-            keepAPI.login(req['login'], req['password'])
-            print("afta keep")
-            config.clientServices[req['login']] = keepAPI  # may result in errror in main loop
+        if req['type'] == "keep":
+
+            try:
+                print("b4 keep")
+                keepAPI = gkeepapi.Keep()
+                keepAPI.login(req['login'], req['password'])
+                print("afta keep")
+                config.clientServices[req['login']] = keepAPI  # may result in errror in main loop
+                config.servicesCount += 0.5
+                return redirect('/authorize')
+            except Exception as e:
+                print(e)
+                return jsonify("Bad Authentication")
+        else:
+
+            config.clientServices[req['login']] = "noKeep"  # may result in errror in main loop
             config.servicesCount += 0.5
             return redirect('/authorize')
-        except Exception as e:
-            print(e)
-            return jsonify("Bad Authentication")
+
     else:
         print(session['credentials'])
         return ('', 204)
@@ -86,9 +100,12 @@ def authenticate():
 @app.route('/sign', methods=['GET'])
 def routeSignIn():
     return send_from_directory('react_spacedin/build', 'index.html')
+
+
 @app.route('/success', methods=['GET'])
 def succ():
     return send_from_directory('react_spacedin/build', 'index.html')
+
 
 @app.route('/main', methods=['GET'])
 def initiate():
@@ -108,10 +125,12 @@ def initiate():
 
     return redirect('/success')
 
+
 @app.route('/signout', methods=['GET'])
 def signout():
     del config.clientServices[req["uname"]]
     session.clear()
+
 
 @app.route('/authorize', methods=['GET'])
 @cross_origin(supports_credentials=True)

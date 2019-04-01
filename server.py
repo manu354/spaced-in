@@ -4,6 +4,7 @@ import google_auth_oauthlib.flow
 import config
 import main
 import gkeepapi
+from datetime import datetime
 from flask import Flask, send_from_directory, session, redirect, url_for, escape, request, jsonify
 from flask_cors import CORS, cross_origin
 
@@ -57,7 +58,9 @@ def newServiceObject(calCreds, keepCreds):
         config.clientServices[keepCreds['username']] = newService
         config.servicesCount += 0.5
     else:
+        print("Creating with keep")
         newService = main.ClientService(calCreds, keepCreds, oldKeepService)
+        print("Created!")
         config.clientServices[keepCreds['username']] = newService
         config.servicesCount += 0.5
 
@@ -65,7 +68,7 @@ def newServiceObject(calCreds, keepCreds):
 # ROUTES TO HANDLE KEEP AND CAL AUTH
 @app.route('/authenticate', methods=['POST'])
 @cross_origin(supports_credentials=True)
-def authenticate():
+def authenticate(): # the first steps that are executed once a user hits 'sign in'
     # print(dir(session))
     if 'credentials' not in session:
         req = request.get_json(force=True)
@@ -141,7 +144,7 @@ def authorize():
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES)
 
-    flow.redirect_uri = 'http://spaced-in.herokuapp.com/oauth2callback'
+    flow.redirect_uri = 'http://manuman.com/oauth2callback'
 
     authorization_url, state = flow.authorization_url(
         # Enable offline access so that you can refresh an access token without
@@ -175,7 +178,7 @@ def oauth2callback():
 
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
-    flow.redirect_uri = 'http://spaced-in.herokuapp.com/oauth2callback'
+    flow.redirect_uri = 'http://manuman.com/oauth2callback'
 
     print("Now fetching tokens")
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
@@ -191,16 +194,24 @@ def oauth2callback():
     # print("flow", flow)
     session['credentials'] = credentials_to_dict(credentials)
     # print(dir(credentials))
-    # http://manuman.com/oauth2callback?state=ZX4PcXl5PO6AUUppaNVdSXWIjZSgaO&code=4/BgEe5iBw5kxVYdz9Qx1cUuzD-XpB3icdkXAhMN6A1ISXLrobjazxegYWjAZrodTr4os0IIAUAZmo9LuAUcxJDPY&scope=email%20profile%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.profile%20openid&authuser=0&session_state=920061533fcb3acb8916eee04910c46b31a8f268..3bfc&prompt=none
+    # http://http://man.com/oauth2callback?state=ZX4PcXl5PO6AUUppaNVdSXWIjZSgaO&code=4/BgEe5iBw5kxVYdz9Qx1cUuzD-XpB3icdkXAhMN6A1ISXLrobjazxegYWjAZrodTr4os0IIAUAZmo9LuAUcxJDPY&scope=email%20profile%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.profile%20openid&authuser=0&session_state=920061533fcb3acb8916eee04910c46b31a8f268..3bfc&prompt=none
     return redirect('/main')
 
 
 @app.route('/spaceout', methods=['POST'])
 def space_out():
     # session =  get_session(request)
-    req = request.json()
+    req = request.get_json(force=True)
     config.threadPool.submit(config.clientServices[req["uname"]].space_out)
-    return web.Response(text="cool")
+    return jsonify(True)
+
+@app.route('/enternew', methods=['POST'])
+def enternew():
+    # session =  get_session(request)
+    req = request.get_json(force=True)
+    print(req)
+    config.threadPool.submit(config.clientServices[req["uname"]].createEvent, req['title'], req['desc'], datetime.now())
+    return jsonify(True)
 
 
 if __name__ == "__main__":

@@ -14,7 +14,9 @@ from google.cloud.firestore_v1beta1 import ArrayRemove, ArrayUnion
 from concurrent.futures import wait, ALL_COMPLETED
 import logging
 from db import addDaysToString, days_in_month, getMYD, fill, sortEntries, entries_to_array
-import re; re._pattern_type = re.Pattern
+import re;
+
+re._pattern_type = re.Pattern
 cred = credentials.Certificate("key.json")
 firebase_admin.initialize_app(cred)
 
@@ -55,7 +57,6 @@ class ClientService:
 
             # Then setup keep
 
-
             doc_ref = db.collection('users').document(keepCredentials['username'])
             doc_ref.set({
                 'name': keepCredentials['username'],
@@ -71,8 +72,8 @@ class ClientService:
         except Exception as e:
             print(e)
 
-    def createEvent(self, title, desc, dateCreated, hasKeep):
-        logging.basicConfig(filename='myapp.log', level=logging.INFO)
+    def createEvent(self, title, desc, dateCreated):
+        # logging.basicConfig(filename='myapp.log', level=logging.INFO)
         try:
             print("Create event?", title, desc, dateCreated)
             doc_ref = db.collection('users').document(self.userName)
@@ -152,13 +153,13 @@ class ClientService:
 
     def space_out(self):
         try:
-            currMonth = 3
             currDate = datetime.datetime.today()
 
             InitPadding = 3  # do not space out the first n - 2 ( -2, because needs to look at neighbours) days.
 
             doc_ref = db.collection("users").document(self.userName)
             data = doc_ref.get().to_dict()
+            currMonth = int(data['currMonth'])
             fireBatch = db.batch()
             for month in range(currMonth, 13):
                 print(month)
@@ -168,52 +169,58 @@ class ClientService:
                 # while doNothing < len(thisMonthsData)-1:
                 entryCount = 0
                 for entry in thisMonthsData:
-                    day = getMYD(entry["date"], "day") - 1
-                    # print(thisMonthsData)
+                    day = getMYD(entry["date"], "day")
+                    pInArray = day - 1
+                    print("looking at day:", day)
                     if currDate + datetime.timedelta(days=InitPadding) < datetime.datetime.strptime(entry["date"],
                                                                                                     "%Y-%m-%d") \
                             and "changed" not in entry and day >= 2 and day <= days_in_month(month) - 2:
                         arr = entries_to_array(thisMonthsData)
 
-                        print("day to check", arr, day)
-                        neighbours = [arr[day - 2], arr[day - 1], arr[day + 1], arr[day + 2]]
-                        index = 0
-                        best = neighbours[0]
-                        count = 1
-                        for j in range(1, len(neighbours)):
-                            if neighbours[j] + j / 4 < best:
-                                index = j
-                                best = neighbours[j] + j / 4
-                            count += 1
-                        # print (index)
-                        # print( neighbours)
-                        print(neighbours, arr[day], index)
-                        if neighbours[index] >= arr[day]:
-                            doNothing += 1
-                        else:
-                            print("inif")
-                            if index <= 1:
-                                index -= 2
+                        print(" ----------------"
+                              "BEGIN with: ", arr, "CURRENTLY ON DAY", day, "----------------")
+                        if arr[pInArray] != 1:
+                            neighbours = [arr[pInArray - 2], arr[pInArray - 1], arr[pInArray + 1], arr[pInArray + 2]]
+                            index = 0
+                            best = neighbours[0]
+                            count = 1
+                            for j in range(1, len(neighbours)):
+                                if neighbours[j] + j / 4 < best:
+                                    index = j
+                                    best = neighbours[j] + j / 4
+                                count += 1
+                            # print (index)
+                            # print( neighbours)
+                            print("Days neighbours", neighbours, arr[pInArray], index)
+                            if neighbours[index] + 1 >= arr[pInArray]:
+                                # only move if it will actually make an overall difference
+                                doNothing += 1
                             else:
-                                index -= 1
-                            print("kidnex ", index)
-                            newDate = addDaysToString(entry["date"], index)
-                            if getMYD(newDate, "month") == month:
-                                entry["date"] = newDate
-                                # the problem is that sees a 0 and subtracts one day from date leading to 31st
-                                thisMonthsData[entryCount]["date"] = entry["date"]  # not necce
-                                thisMonthsData[entryCount]["changed"] = True
-                                print(thisMonthsData[entryCount]["date"])
-                                sortEntries(thisMonthsData)
-                            else:
-                                print("OH AWSDHFJZSDJAFAJDFSJASDFJASDJFJASDFJA")
+                                if index <= 1:
+                                    index -= 2
+                                else:
+                                    index -= 1
+                                print("Changing date by ", index, " days")
+                                newDate = addDaysToString(entry["date"], index)
+                                if getMYD(newDate, "month") == month:
+                                    print("Before change: " + entry['date'])
+                                    entry["date"] = newDate
+                                    print("After change: ", entry['date'])
+                                    # the problem is that sees a 0 and subtracts one day from date leading to 31st
+                                    # thisMonthsData[entryCount]["date"] = entry["date"]  # not necce
+                                    # thisMonthsData[entryCount]["changed"] = True
 
+                                else:
+                                    print("OH AWSDHFJZSDJAFAJDFSJASDFJASDJFJASDFJA")
+                        else:
+                            doNothing+=1
                     else:
                         if "changed" in entry:
                             del entry["changed"]
                         doNothing += 1
 
                     entryCount += 1
+                sortEntries(thisMonthsData)
 
                 fireBatch.update(doc_ref, {
                     str(month): thisMonthsData
@@ -224,8 +231,9 @@ class ClientService:
                 print("NEWWWWWWW", neww, len(neww))
             fireBatch.commit()
             print("calling refresh (Ring ring)")
-            print(data)
+            # print(data)
             self.refreshCalendar(data)
+            print("dunnas")
         except Exception as e:
             print(e)
 
@@ -292,9 +300,22 @@ def threadWork(obj):
 
 def startLoop():
     while 1:
-        arrayOfFutures = []
-        for obj in config.clientServices:
-            if obj.keepi:
-                arrayOfFutures.append(config.threadPool.submit(threadWork, config.clientServices[obj]))
+        try:
+            arrayOfFutures = []
+            # print ("Ya", config.clientServices)
+            for obj in config.clientServices:
+                if config.clientServices[obj].keep:
+                    # print("Ya")
+                    arrayOfFutures.append(config.threadPool.submit(threadWork,  config.clientServices[obj]))
 
-        wait(arrayOfFutures, timeout=None, return_when=ALL_COMPLETED)
+            wait(arrayOfFutures, timeout=None, return_when=ALL_COMPLETED)
+        except Exception as e:
+            # x=0
+            print(e)
+
+
+# TODO for tomorrow: keep doesnt seem to be added to the right dates? desc and title from website is alwauys null.
+# fix 1 was to sort before uplaoding.
+# TODO: we got a lot done yesterday: fixed spaceout (although may need some more tweaking: error was called that means sometimes it goes into the next month, and at the last moment it suddenly added like a 100 things)
+# todo: We implemented enternew - and it seems like it should work without too much hassle
+# todo: after these fixes, only things left are design/content and bugs, oh and limit following tasks to 5

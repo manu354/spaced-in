@@ -29,7 +29,7 @@ def fake_data():
                     obj.append({
                         'title': "Physics",
                         'desc': "Circular Motion " + str(amount),
-                        'date': "2019-" + str(month) + "-" + str(day),
+                        'date': datetime.datetime(2019, month, day).strftime('%Y-%m-%d')
                     })
                 if obj:
                     fireBatch.update(doc_ref, {
@@ -42,7 +42,7 @@ def fake_data():
                     obj.append({
                         'title': "Economics",
                         'desc': "Circular Motion " + str(amount),
-                        'date': "2019-" + str(month) + "-" + str(day),
+                        'date':  datetime.datetime(2019, month, day).strftime('%Y-%m-%d')
                     })
                 if obj:
                     fireBatch.update(doc_ref, {
@@ -50,7 +50,7 @@ def fake_data():
                     })
         fireBatch.set(doc_ref, {
             'name': "manummasson8",
-            'currMonth': "3",
+            'currMonth': "4",
             'tasks': True,
         }, merge=True)
         fireBatch.commit()  # in month loop since only 500 requests per batch allowed.
@@ -118,30 +118,30 @@ def entries_to_array(entry):
     amount = 1
 
     length = len(entries)
-    sentinel = entries[length - 1]
+    sentinel = deepcopy(entries[length - 1])
     sentinel["date"] = addDaysToString(sentinel["date"], 1)
     sentinel["desc"] = "sentinel"  # for debugging
 
     # print(sentinel)
     entries.append(sentinel)
     length += 1
-
     for count in range(1, length):
-
         if entries[count]["date"] == prevDate:
             amount += 1
+            # if count == length-1:
+            #     arr.append(amount)
         else:
             arr.append(amount)
             amount = 1
 
         arr = fill(getMYD(prevDate, "day"), getMYD(entries[count]["date"], "day"),
-                   arr)  # inclusive therefore 9-->10 wont fill
+                   arr)  #  todo: what does this do? --> it adds 0's between
 
         prevDate = entries[count]["date"]
 
     arr = fill(getMYD(entries[length - 2]["date"], "day"), 35,
                arr)
-    print("done TO_ARRAY funco", arr, len(arr))  # ^^
+    # print("done TO_ARRAY funco", arr, len(arr))  # ^^
 
     return arr
 
@@ -152,10 +152,12 @@ if __name__ == "__main__":
 
 
     def unitTest():
-        # data = doc_ref.get().to_dict()
-        # x = entries_to_array(data["3"])
-        # print(x, len(x))/
-        fake_data()
+        db = firestore.client()
+        doc_ref = db.collection("users").document("manummasson8")
+        data = doc_ref.get().to_dict()
+        x = entries_to_array(data["4"])
+        print(x, len(x))
+        # fake_data()
         # space_out()
 
 

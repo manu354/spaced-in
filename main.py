@@ -155,7 +155,7 @@ class ClientService:
         try:
             currDate = datetime.datetime.today()
 
-            InitPadding = 3  # do not space out the first n - 2 ( -2, because needs to look at neighbours) days.
+            InitPadding = 2  # do not space out the first n - 2 ( -2, because needs to look at neighbours) days.
 
             doc_ref = db.collection("users").document(self.userName)
             data = doc_ref.get().to_dict()
@@ -164,71 +164,75 @@ class ClientService:
             for month in range(currMonth, 13):
                 print(month)
                 thisMonthsData = data[str(month)]
-                oldMonth = deepcopy(thisMonthsData)
-                doNothing = 0
-                # while doNothing < len(thisMonthsData)-1:
-                entryCount = 0
-                for entry in thisMonthsData:
-                    day = getMYD(entry["date"], "day")
-                    pInArray = day - 1
-                    print("looking at day:", day)
-                    if currDate + datetime.timedelta(days=InitPadding) < datetime.datetime.strptime(entry["date"],
-                                                                                                    "%Y-%m-%d") \
-                            and "changed" not in entry and day >= 2 and day <= days_in_month(month) - 2:
-                        arr = entries_to_array(thisMonthsData)
+                print(thisMonthsData)
+                if thisMonthsData:
 
-                        print(" ----------------"
-                              "BEGIN with: ", arr, "CURRENTLY ON DAY", day, "----------------")
-                        if arr[pInArray] != 1:
-                            neighbours = [arr[pInArray - 2], arr[pInArray - 1], arr[pInArray + 1], arr[pInArray + 2]]
-                            index = 0
-                            best = neighbours[0]
-                            count = 1
-                            for j in range(1, len(neighbours)):
-                                if neighbours[j] + j / 4 < best:
-                                    index = j
-                                    best = neighbours[j] + j / 4
-                                count += 1
-                            # print (index)
-                            # print( neighbours)
-                            print("Days neighbours", neighbours, arr[pInArray], index)
-                            if neighbours[index] + 1 >= arr[pInArray]:
-                                # only move if it will actually make an overall difference
-                                doNothing += 1
+                    sortEntries(thisMonthsData)
+                    oldMonth = deepcopy(thisMonthsData)
+                    doNothing = 0
+                    # while doNothing < len(thisMonthsData)-1:
+                    entryCount = 0
+                    for entry in thisMonthsData:
+                        day = getMYD(entry["date"], "day")
+                        pInArray = day - 1
+                        print("looking at day:", day)
+                        if currDate + datetime.timedelta(days=InitPadding) < datetime.datetime.strptime(entry["date"],
+                                                                                                        "%Y-%m-%d") \
+                                and "changed" not in entry and day >= 2 and day <= days_in_month(month) - 2:
+                            arr = entries_to_array(thisMonthsData)
+
+                            print(" ----------------"
+                                  "BEGIN with: ", arr, "CURRENTLY ON DAY", day, "----------------")
+                            if arr[pInArray] != 1:
+                                neighbours = [arr[pInArray - 2], arr[pInArray - 1], arr[pInArray + 1], arr[pInArray + 2]]
+                                index = 0
+                                best = neighbours[0]
+                                count = 1
+                                for j in range(1, len(neighbours)):
+                                    if neighbours[j] + j / 4 < best:
+                                        index = j
+                                        best = neighbours[j] + j / 4
+                                    count += 1
+                                # print (index)
+                                # print( neighbours)
+                                print("Days neighbours", neighbours, arr[pInArray], index)
+                                if neighbours[index] + 1 >= arr[pInArray]:
+                                    # only move if it will actually make an overall difference
+                                    doNothing += 1
+                                else:
+                                    if index <= 1:
+                                        index -= 2
+                                    else:
+                                        index -= 1
+                                    print("Changing date by ", index, " days")
+                                    newDate = addDaysToString(entry["date"], index)
+                                    if getMYD(newDate, "month") == month:
+                                        print("Before change: " + entry['date'])
+                                        entry["date"] = newDate
+                                        print("After change: ", entry['date'])
+                                        # the problem is that sees a 0 and subtracts one day from date leading to 31st
+                                        # thisMonthsData[entryCount]["date"] = entry["date"]  # not necce
+                                        # thisMonthsData[entryCount]["changed"] = True
+
+                                    else:
+                                        print("OH AWSDHFJZSDJAFAJDFSJASDFJASDJFJASDFJA")
                             else:
-                                if index <= 1:
-                                    index -= 2
-                                else:
-                                    index -= 1
-                                print("Changing date by ", index, " days")
-                                newDate = addDaysToString(entry["date"], index)
-                                if getMYD(newDate, "month") == month:
-                                    print("Before change: " + entry['date'])
-                                    entry["date"] = newDate
-                                    print("After change: ", entry['date'])
-                                    # the problem is that sees a 0 and subtracts one day from date leading to 31st
-                                    # thisMonthsData[entryCount]["date"] = entry["date"]  # not necce
-                                    # thisMonthsData[entryCount]["changed"] = True
-
-                                else:
-                                    print("OH AWSDHFJZSDJAFAJDFSJASDFJASDJFJASDFJA")
+                                doNothing+=1
                         else:
-                            doNothing+=1
-                    else:
-                        if "changed" in entry:
-                            del entry["changed"]
-                        doNothing += 1
+                            if "changed" in entry:
+                                del entry["changed"]
+                            doNothing += 1
 
-                    entryCount += 1
-                sortEntries(thisMonthsData)
+                        entryCount += 1
+                    sortEntries(thisMonthsData)
 
-                fireBatch.update(doc_ref, {
-                    str(month): thisMonthsData
-                })
-                data[str(month)] = thisMonthsData
-                neww = entries_to_array(thisMonthsData)
-                print("OLDDDDDDD", entries_to_array(oldMonth), "EMND DOLDDLDLdd", )
-                print("NEWWWWWWW", neww, len(neww))
+                    fireBatch.update(doc_ref, {
+                        str(month): thisMonthsData
+                    })
+                    data[str(month)] = thisMonthsData
+                    neww = entries_to_array(thisMonthsData)
+                    print("OLDDDDDDD", entries_to_array(oldMonth), "EMND DOLDDLDLdd", )
+                    print("NEWWWWWWW", neww, len(neww))
             fireBatch.commit()
             print("calling refresh (Ring ring)")
             # print(data)
@@ -315,7 +319,7 @@ def startLoop():
 
 
 # TODO for tomorrow: keep doesnt seem to be added to the right dates? desc and title from website is alwauys null.
-# fix 1 was to sort before uplaoding.
+# fix 1 was to sort before using data. use textfield instead of auto complete
 # TODO: we got a lot done yesterday: fixed spaceout (although may need some more tweaking: error was called that means sometimes it goes into the next month, and at the last moment it suddenly added like a 100 things)
 # todo: We implemented enternew - and it seems like it should work without too much hassle
 # todo: after these fixes, only things left are design/content and bugs, oh and limit following tasks to 5

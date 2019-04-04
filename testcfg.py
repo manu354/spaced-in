@@ -1,0 +1,1 @@
+GLOBALME = 0

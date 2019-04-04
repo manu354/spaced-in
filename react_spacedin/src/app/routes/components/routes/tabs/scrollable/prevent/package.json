@@ -1,0 +1,10 @@
+{
+  "name": "ScrollableTabsButtonPrevent",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ScrollableTabsButtonPrevent.js",
+  "dependencies": {
+    "material-ui": "next",
+    "@material-ui/icons": "next"
+  }
+}

@@ -1,0 +1,38 @@
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/calendar/v3/calendars/pa7unfir2i3haoc4t900u3r00c%40group.calendar.google.com/events?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/calendar/v3/calendars/pa7unfir2i3haoc4t900u3r00c%40group.calendar.google.com/events?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/calendar/v3/calendars/pa7unfir2i3haoc4t900u3r00c%40group.calendar.google.com/events?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/calendar/v3/calendars/pa7unfir2i3haoc4t900u3r00c%40group.calendar.google.com/events?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/calendar/v3/calendars/pa7unfir2i3haoc4t900u3r00c%40group.calendar.google.com/events?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/calendar/v3/calendars/k99ehn68t2hudtv26lm655isdk%40group.calendar.google.com/events?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/calendar/v3/calendars/k99ehn68t2hudtv26lm655isdk%40group.calendar.google.com/events?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/calendar/v3/calendars/k99ehn68t2hudtv26lm655isdk%40group.calendar.google.com/events?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/calendar/v3/calendars/k99ehn68t2hudtv26lm655isdk%40group.calendar.google.com/events?alt=json
+INFO:googleapiclient.discovery:URL being requested: POST https://www.googleapis.com/calendar/v3/calendars/k99ehn68t2hudtv26lm655isdk%40group.calendar.google.com/events?alt=json
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:43] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:43] "GET /loader.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:43] "GET /static/css/10.eb01e8c1.chunk.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:43] "GET /static/css/main.5633efbe.chunk.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:43] "GET /static/js/10.1ce9bd2b.chunk.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:43] "GET /static/js/main.9d2c8548.chunk.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:44] "GET /static/css/10.eb01e8c1.chunk.css.map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:44] "GET /loader.css.map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:44] "GET /static/css/main.5633efbe.chunk.css.map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:44] "GET /static/js/10.1ce9bd2b.chunk.js.map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:44] "GET /static/js/main.9d2c8548.chunk.js.map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:26:44] "POST /checkAuth HTTP/1.1" 204 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:27:51] "GET / HTTP/1.1" 404 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:27:53] "GET / HTTP/1.1" 404 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:27:56] "GET / HTTP/1.1" 404 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:27:58] "GET / HTTP/1.1" 404 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:04] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:04] "GET /loader.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:04] "GET /static/css/10.eb01e8c1.chunk.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:04] "GET /static/css/main.5633efbe.chunk.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:05] "GET /static/js/10.1ce9bd2b.chunk.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:05] "GET /static/js/main.30d1ecab.chunk.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:05] "GET /loader.css.map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:05] "GET /static/css/10.eb01e8c1.chunk.css.map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:05] "GET /static/css/main.5633efbe.chunk.css.map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:05] "GET /static/js/10.1ce9bd2b.chunk.js.map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:05] "GET /static/js/main.30d1ecab.chunk.js.map HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Mar/2019 20:29:05] "POST /checkAuth HTTP/1.1" 204 -

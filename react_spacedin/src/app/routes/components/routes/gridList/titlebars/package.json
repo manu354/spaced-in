@@ -1,0 +1,10 @@
+{
+  "name": "TitlebarGridList",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./TitlebarGridList.js",
+  "dependencies": {
+    "material-ui": "next",
+    "@material-ui/icons": "next"
+  }
+}

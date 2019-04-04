@@ -1,0 +1,10 @@
+{
+  "name": "HorizontalLinearStepper.js",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./HorizontalLinearStepper.js.js",
+  "dependencies": {
+    "material-ui": "next",
+    "@material-ui/icons": "next"
+  }
+}

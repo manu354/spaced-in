@@ -129,10 +129,13 @@ def initiate():
     return redirect('/success')
 
 
-@app.route('/signout', methods=['GET'])
+@app.route('/signout', methods=['POST'])
 def signout():
+    print("signing a user out")
+    req = request.get_json(force=True)
     del config.clientServices[req["uname"]]
     session.clear()
+    return ('', 204)
 
 
 @app.route('/authorize', methods=['GET'])

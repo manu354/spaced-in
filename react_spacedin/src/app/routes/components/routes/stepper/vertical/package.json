@@ -1,0 +1,10 @@
+{
+  "name": "VerticalLinearStepper",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./VerticalLinearStepper.js",
+  "dependencies": {
+    "material-ui": "next",
+    "@material-ui/icons": "next"
+  }
+}
